@@ -120,8 +120,8 @@
             </a>
             <ul>         
                 <li class="<?php if ($page_name == 'invoice') echo 'active'; ?> ">
-                    <a href="<?php echo base_url(); ?>admin/invoice">
-                        Invoice/Payment List </span>
+                    <a href="<?php echo base_url(); ?>admin/invoice_report">
+                        Invoice/Payment Report </span>
                     </a>
                 </li>
                 <li class="<?php if ($page_name == 'generate_invoice') echo 'active'; ?> ">

@@ -3,16 +3,28 @@
 <div class="panel panel-default">
   <div class="panel-body text-center">
     <div class="btn-group" role="group" aria-label="...">
-        <?php $classes = $this->db->get('class')->result_array(); ?>
+    <a class="btn btn-lg btn-info <?php if(!$class_id || $class_id == NULL) echo ' active bold' ?>" href="<?php echo base_url().'admin/invoice_report/0/'.$payment_status; ?>" role="button">ALL</a>
+        <?php 
+            $class_name = '';
+            $payment_status_text = '';
+            $classes = $this->db->get('class')->result_array(); 
+        ?>
         <?php foreach($classes as $row) { ?>
-            <a class="btn btn-lg btn-info" href="#" role="button"><?php echo $row['name']; ?></a>
+            <a class="btn btn-lg btn-info <?php if($row['class_id'] == $class_id) {echo ' active bold'; $class_name = ' > '.$row['name'];} ?>" href="<?php echo base_url().'admin/invoice_report/'.$row['class_id'].'/'.$payment_status; ?>" role="button"><?php echo $row['name']; ?></a>
         <?php } ?>
     </div>
     <div class="btn-group" role="group" aria-label="...">
-        <a class="btn btn-lg btn-success" href="#" role="button">Paid</a>
-        <a class="btn btn-lg btn-danger" href="#" role="button">Unpaid</a>
+        <a class="btn btn-lg btn-info <?php if($payment_status !== '0' && $payment_status !== '1') echo ' active bold' ?>" href="<?php echo base_url().'admin/invoice_report/'.$class_id; ?>" role="button">ALL</a>
+        <a class="btn btn-lg btn-info <?php if($payment_status == '1') {echo ' active bold'; $payment_status_text = ' > (Paid)';} ?>" href="<?php echo base_url().'admin/invoice_report/'.$class_id.'/1'; ?>" role="button">Paid</a>
+        <a class="btn btn-lg btn-info <?php if($payment_status == '0') {echo ' active bold'; $payment_status_text = ' > (Unpaid)';} ?>" href="<?php echo base_url().'admin/invoice_report/'.$class_id.'/0'; ?>" role="button">Unpaid</a>
     </div>
   </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-body">
+        <strong >Session (<?php echo $this->session->userdata('session_name'); ?>) <?=$class_name?> <?=$payment_status_text?>  > Total amount :  <span class="total_amount"></span></strong>
+    </div>
 </div>
 
 <table  class="table table-bordered datatable" id="table_export">
@@ -28,11 +40,12 @@
         </tr>
     </thead>
     <tbody>
+        <?php $total_amount = 0; ?>
         <?php foreach($invoices as $row):?>
         <tr>
             <td><?php echo $this->crud_model->get_type_name_by_id('student',$row['student_id']);?></td>
             <td><?php echo $row['title'];?></td>
-            <td><?php echo $row['amount'];?></td>
+            <td><?php echo $row['amount']; $total_amount+=$row['amount']; ?></td>
             <td><?php echo $row['amount_paid'];?></td>
             <td>
                 <span class="label label-<?php if($row['status']=='1')echo 'success';else echo 'secondary';?>">
@@ -93,6 +106,7 @@
             </td>
         </tr>
         <?php endforeach;?>
+        <script> $('.total_amount').text("<?php echo $total_amount; ?>"); </script>
     </tbody>
 </table>
 			

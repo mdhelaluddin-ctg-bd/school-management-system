@@ -713,7 +713,7 @@ class Admin extends CI_Controller{
             }
 
             $this->session->set_flashdata('flash_message' , get_phrase('data_added_successfully'));
-            redirect(base_url() . 'admin/invoice', 'refresh');
+            redirect(base_url() . 'admin/generate_invoice', 'refresh');
         }
         if ($param1 == 'do_update') {
             $data['student_id']         = $this->input->post('student_id');
@@ -767,6 +767,25 @@ class Admin extends CI_Controller{
 
         $this->db->where('session_id', $this->session->userdata('session_id'));
         $this->db->order_by('due_date', 'desc');
+        $page_data['invoices'] = $this->db->get('invoice')->result_array();
+        $this->load->view('backend/index', $page_data);
+    }
+
+    function invoice_report($class_id = 0, $payment_status = NULL)
+    {
+        $page_data['page_name']  = 'invoice_report';
+        $page_data['page_title'] =  'Invoice/Payment Report';
+        $page_data['class_id']          = $class_id;
+        $page_data['payment_status']    = $payment_status;
+
+        $this->db->where('session_id', $this->session->userdata('session_id'));
+        $this->db->order_by('due_date', 'desc');
+        if($class_id && $class_id !== NULL) {
+            $this->db->where('class_id', $class_id);
+        } 
+        if($payment_status !== NULL && ($payment_status == '0' || $payment_status == '1')) {
+            $this->db->where('status', $payment_status);
+        }
         $page_data['invoices'] = $this->db->get('invoice')->result_array();
         $this->load->view('backend/index', $page_data);
     }
